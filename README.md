@@ -2,6 +2,8 @@
 
 Scraper diario de eventos **tech** y **ai** publicados en [Luma](https://lu.ma). Consulta el endpoint interno de descubrimiento, deduplica por `api_id` y genera CSVs con los eventos nuevos.
 
+> Basado en [mayckolco/luma-event-scraper](https://github.com/mayckolco/luma-event-scraper), con la configuración adaptada a París.
+
 ## Requisitos
 
 - Python 3.10+
@@ -34,7 +36,7 @@ python scraper.py --dry-run
 Editar [`config.py`](config.py) sin tocar la lógica del scraper:
 
 - `CATEGORIES` — slugs a consultar (default: `tech`, `ai`)
-- `CITIES` — lista de `{name, lat, lon}` (mínimo 5 ciudades)
+- `CITIES` — lista de `{name, lat, lon}` (mínimo 1 ciudad)
 - `MAX_PAGES` — límite de seguridad por par categoría/ciudad
 - `REQUEST_DELAY_MIN` / `REQUEST_DELAY_MAX` — pausa aleatoria entre requests
 - `MAX_RETRIES` / `RETRY_BACKOFF_BASE` — reintentos ante fallos de red

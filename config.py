@@ -3,17 +3,12 @@
 CATEGORIES = ["tech", "ai"]
 
 CITIES = [
-    {"name": "San Francisco", "lat": 37.7749, "lon": -122.4194},
-    {"name": "New York", "lat": 40.7128, "lon": -74.0060},
-    {"name": "London", "lat": 51.5074, "lon": -0.1278},
-    {"name": "Berlin", "lat": 52.5200, "lon": 13.4050},
-    {"name": "Lima", "lat": -12.0464, "lon": -77.0428},
-    {"name": "Austin", "lat": 30.2672, "lon": -97.7431},
+    {"name": "Paris", "lat": 48.8566, "lon": 2.3522},
 ]
 
 MAX_PAGES = 50
-REQUEST_DELAY_MIN = 1.0
-REQUEST_DELAY_MAX = 3.0
+REQUEST_DELAY_MIN = 3.0
+REQUEST_DELAY_MAX = 5.0
 MAX_RETRIES = 3
 RETRY_BACKOFF_BASE = 2.0
 REQUEST_TIMEOUT = 30

@@ -55,8 +55,8 @@ def setup_logging() -> None:
 def validate_config() -> None:
     if not config.CATEGORIES:
         raise ValueError("CATEGORIES no puede estar vacío")
-    if len(config.CITIES) < 5:
-        raise ValueError(f"Se requieren al menos 5 ciudades, hay {len(config.CITIES)}")
+    if len(config.CITIES) < 1:
+        raise ValueError(f"Se requiere al menos 1 ciudad, hay {len(config.CITIES)}")
     for city in config.CITIES:
         for key in ("name", "lat", "lon"):
             if key not in city:
