@@ -1,4 +1,4 @@
-Réussi : 2 requêtes sur le calendrier Hexa (passé et futur) suffisent pour récupérer les speakers de tout le semestre, sans requête par événement. 20 événements, 5 avec speakers. L'organisateur (nom du calendrier) est déjà ajouté. Question : on garde aussi les hôtes (personnes) ? Si oui, on ajoute des colonnes hôte_1, hôte_2… à l'Excel.
+Réussi : 2 requêtes Hexa (passé et futur) suffisent pour les speakers du semestre, sans requête par événement. 20 événements, 5 avec speakers. Organisateur (nom du calendrier) déjà ajouté. Question : garde-t-on aussi les hôtes (personnes) ? Si oui, colonnes hôte_1, hôte_2… dans l'Excel.
 
 ---
 
