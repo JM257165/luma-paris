@@ -1,21 +1,18 @@
-Ajout : colonne « organisateur » (nom du calendrier). Test Hexa : tous les événements et speakers du semestre, si tu valides les requêtes.
+Réussi : 2 requêtes sur le calendrier Hexa (passé et futur) suffisent pour récupérer les speakers de tout le semestre, sans requête par événement. 20 événements, 5 avec speakers. L'organisateur (nom du calendrier) est déjà ajouté. Question : on garde aussi les hôtes (personnes) ? Si oui, on ajoute des colonnes hôte_1, hôte_2… à l'Excel.
 
 ---
 
 Ce qu'on a appris :
-- IMPORTDATA lit le CSV brut : l'URL GitHub « blob » renvoie du HTML, il faut raw.githubusercontent.com.
+- IMPORTDATA lit le CSV brut : l'URL GitHub « blob » renvoie du HTML, il faut raw.githubusercontent.com. Dépôt privé : IMPORTDATA ne marche plus.
 - Les intervenants viennent de featured_guests : nom, bio courte, LinkedIn, site, réseaux. Pas de champ entreprise.
-- Sur Hexa, 2 événements sur 15 ont des intervenants, dont 10 chacun : d'où n = 10.
-- Le même endpoint get-items donne le passé et le futur d'un calendrier.
+- Sur Hexa, 5 événements sur 20 ont des intervenants, 10 chacun : d'où MAX_SPEAKERS = 10. À vérifier : limite de l'API ou vrai nombre ?
+- Les speakers sont masqués dans l'interface pour les visiteurs non connectés. Dépôt repassé en privé.
 
-Ce qui est fait (en local, non commité) :
-- config.py : MAX_SPEAKERS = 10, colonnes générées (3 par speaker, 36 au total).
-- scraper.py : build_speaker_link (LinkedIn, puis site, X, Instagram, TikTok, YouTube), extract_speakers, event_to_row.
-- events_master.csv : en-tête migré, 152 lignes conservées, colonnes speaker vides.
-- Test hors réseau sur le brut Hexa : extraction OK, liens LinkedIn corrects.
+Fait et poussé :
+- config.py, scraper.py, backfill_calendar.py : organisateur, speakers, backfill d'un calendrier.
+- events_master.csv : 172 lignes, 37 colonnes, 20 lignes Hexa.
 
 Reste :
-- Valider, puis commiter et pousser le code (le bot tourne encore sur l'ancien code).
-- Vérifier si la réponse discover contient featured_guests, sinon les nouveaux événements resteront vides.
-- Remplir les anciennes lignes via les calendriers, une fois les requêtes autorisées (pauses 3 à 5 s).
-- Liste des calendriers tech/IA parisiens à valider avant de parcourir.
+- Décider : hôtes en plus de l'organisateur ? Si oui, colonnes à ajouter.
+- Vérifier si la réponse discover contient featured_guests (une requête).
+- Remplir les 152 anciennes lignes via d'autres calendriers, après accord (pauses 3 à 5 s).
