@@ -33,3 +33,4 @@ Aucune requête avant ton feu vert.
 ## Événements déjà listés avec champs vides
 
 Décision : retirer les colonnes speaker du schéma. Si un événement déjà listé (même api_id) a un champ vide (ex. organisateur), on complète la ligne existante, sans écraser les champs remplis ni first_seen.
+- Deux endpoints : discover trouve les calendriers (futurs seulement), calendar/get-items donne passé et futur d'un calendrier connu. Exhaustivité non garantie, on accumule au fil des discover.
