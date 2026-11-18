@@ -42,3 +42,13 @@ Sur les 61 calendriers de calendar_master.csv, la recherche « Luma <nom> Paris 
 ## Recherche web v2 : résultat
 
 Requête « <nom court> calendar Paris events », restreinte à lu.ma et luma.com, avec sélection des pages dont le titre contient « Events Calendar ». Résultat : 17 calendriers retrouvés sur 61, soit **27,9 %**, contre 6,6 % avec la v1. Gains : 14 calendriers, dont Dust, Hexa, Startup Valley, swanbase et Vercel Community. Pertes : LeClub IA, retrouvé par la v1 mais pas par la v2. Limites : DR Network est rejeté à cause de son titre en français « Calendrier d'événements », et les calendriers non indexés (Alan, Modal, Tandem) restent introuvables. Prochain pas : accepter ce titre français et relancer LeClub IA.
+
+## Analyse d'un ami : contourner le blocage de recherche
+
+- Constat : Google bloque l'IP (pas le compte) lors d'un scraping rapide. Pour un seul domaine : utiliser le sitemap.xml du site cible, ou cumuler les quotas gratuits d'une dizaine d'API de résultats de recherche (Bright Data, Serper, Brave, Tavily, Exa, DataForSEO, Keirolabs, SerpApi…) en optimisant les requêtes avec site:domaine.com et OR.
+- Volume gratuit annoncé (non vérifié) : ~8 000 à 12 000 requêtes récurrentes par mois, ~6 000 en crédits à l'inscription, ~300 à 400 par jour en moyenne.
+- Avis : le constat sur l'IP est plausible, mais les chiffres sont des estimations non sourcées, à vérifier sur les pages tarifaires de chaque fournisseur. Trois points bloquants :
+  1. Cumuler les quotas gratuits en ouvrant plusieurs comptes revient à contourner les limites des services. C'est la voie que tu as exclue (pas de compte jetable, pas de contournement).
+  2. Le sitemap de lu.ma reste une requête vers Luma : elle ne se lance qu'après ton feu vert, avec les pauses de 3 à 5 s.
+  3. Les conditions d'utilisation de ces APIs et de la recherche elle-même doivent être lues avant tout usage ; « Keirolabs » n'est pas un service que je peux vérifier.
+- Piste plus propre : une seule API de recherche officielle, sur un compte à ton nom, avec son quota payant ou gratuit documenté. Pour une centaine de requêtes, le coût devrait rester faible. Rien n'est lancé.
