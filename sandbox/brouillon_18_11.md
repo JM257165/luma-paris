@@ -20,3 +20,12 @@ Reste :
 ## Invités mis en avant : ce qu'on a appris
 
 Les colonnes speaker_i du CSV remote ne sont pas des intervenants mais des invités mis en avant par Luma (10 sur 102 pour 8q8fwz0z), sans rôle ni critère de sélection connus. La description dit « no program ». L'organisateur réel est la colonne organisateur (nom du calendrier, ex. Hexa House). L'affichage peut différer de la donnée : l'hôte « Hexa » est Faustine Rohr-Lacoste dans le JSON, et le code source affiche aussi (Hexa) après son nom. Décision : on abandonne les invités mis en avant et on garde les organisateurs.
+
+## Prochaine étape : tous les calendriers tech/IA de Paris
+
+1. Lister les calendriers Luma associés à la tech ou à l'IA à Paris.
+2. Pour chaque calendrier, appliquer la méthode Hexa : 2 requêtes (passé et futur), pauses de 3 à 5 s, arrêt immédiat sur 403 ou 429, pages bornées.
+3. Garder les organisateurs et les événements, sans les invités mis en avant.
+4. Proxy : à éviter. Si un blocage survient, on s'arrête et on en reparle, sans en choisir un au hasard.
+
+Aucune requête avant ton feu vert.
