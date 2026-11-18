@@ -17,6 +17,8 @@ Chaque jour, ajouter à calendar_master.csv les calendriers vus dans discover, s
 
 Je comprends l'idée : une liste de 120 entreprises (Next 40 et French Tech 120), un onglet de recherche « Luma + entreprise » par nom, puis un tri manuel par toi. Ce tri à la main est acceptable. Un script qui tape dans Google et ouvre les onglets à ta place reste de l'automatisation de Google : je ne le code pas. Je peux à la place fournir la liste de requêtes à copier toi-même.
 
+Risque : automatiser Google expose à un blocage (CAPTCHA, « trafic inhabituel ») et à une violation de ses conditions, même avec délais aléatoires. Je ne détaille pas comment échapper à la détection, et on n'automatise pas.
+
 ## À faire
 
 (à compléter)
