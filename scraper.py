@@ -11,7 +11,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
@@ -30,6 +30,8 @@ class Event:
     start_date: str
     city: str
     category: str
+    organisateur: str = ""
+    speakers: list[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -152,6 +154,51 @@ def build_event_url(slug: str) -> str:
     return f"{LUMA_EVENT_BASE_URL}{slug.lstrip('/')}"
 
 
+def build_speaker_link(guest: dict) -> str:
+    """Lien LinkedIn en priorité, puis site et autres réseaux (ordre de repli)."""
+    linkedin = (guest.get("linkedin_handle") or "").strip()
+    if linkedin:
+        if linkedin.startswith("http"):
+            return linkedin
+        return f"https://www.linkedin.com/{linkedin.lstrip('/')}"
+
+    website = (guest.get("website") or "").strip()
+    if website:
+        return website
+
+    handles = (
+        ("twitter_handle", "https://x.com/{}"),
+        ("instagram_handle", "https://www.instagram.com/{}"),
+        ("tiktok_handle", "https://www.tiktok.com/@{}"),
+        ("youtube_handle", "https://www.youtube.com/@{}"),
+    )
+    for key, template in handles:
+        handle = (guest.get(key) or "").strip().lstrip("@")
+        if handle:
+            return template.format(handle)
+    return ""
+
+
+def extract_speakers(entry: dict, event_data: dict) -> list[dict]:
+    """Extrae los speakers (featured_guests) con nombre, enlace e info de bio."""
+    guests = entry.get("featured_guests") or event_data.get("featured_guests") or []
+    if not isinstance(guests, list):
+        return []
+
+    speakers: list[dict] = []
+    for guest in guests:
+        if not isinstance(guest, dict):
+            continue
+        first = (guest.get("first_name") or "").strip()
+        last = (guest.get("last_name") or "").strip()
+        name = f"{last} {first}".strip() if (first or last) else (guest.get("name") or "").strip()
+        if not name:
+            continue
+        bio = " ".join((guest.get("bio_short") or "").split())
+        speakers.append({"name": name, "link": build_speaker_link(guest), "info": bio})
+    return speakers
+
+
 def parse_entry(entry: dict, category: str, city_name: str) -> Event | None:
     event_data = entry.get("event", entry)
     api_id = entry.get("api_id") or event_data.get("api_id")
@@ -166,6 +213,17 @@ def parse_entry(entry: dict, category: str, city_name: str) -> Event | None:
         log.warning("Evento %s con campos incompletos (name/url/start_date)", api_id)
         return None
 
+    speakers = extract_speakers(entry, event_data)
+    calendar = entry.get("calendar") or event_data.get("calendar") or {}
+    organisateur = (calendar.get("name") or "").strip() if isinstance(calendar, dict) else ""
+    if len(speakers) > config.MAX_SPEAKERS:
+        log.warning(
+            "Evento %s con %d speakers, solo se guardan %d",
+            api_id,
+            len(speakers),
+            config.MAX_SPEAKERS,
+        )
+
     return Event(
         api_id=api_id,
         name=name,
@@ -173,6 +231,8 @@ def parse_entry(entry: dict, category: str, city_name: str) -> Event | None:
         start_date=start_date,
         city=city_name,
         category=category,
+        organisateur=organisateur,
+        speakers=speakers,
     )
 
 
@@ -299,14 +359,21 @@ def save_seen_events(seen: dict[str, str]) -> None:
 
 
 def event_to_row(event: Event, first_seen: str) -> dict[str, str]:
-    return {
+    row = {
         "name": event.name,
         "url": event.url,
         "start_date": event.start_date,
         "city": event.city,
         "category": event.category,
+        "organisateur": event.organisateur,
         "first_seen": first_seen,
     }
+    for i in range(1, config.MAX_SPEAKERS + 1):
+        speaker = event.speakers[i - 1] if i <= len(event.speakers) else None
+        row[f"speaker_{i}"] = speaker["name"] if speaker else ""
+        row[f"speaker_{i}_lien"] = speaker["link"] if speaker else ""
+        row[f"info_speaker_{i}"] = speaker["info"] if speaker else ""
+    return row
 
 
 def append_csv(path: Path, rows: list[dict[str, str]]) -> None:

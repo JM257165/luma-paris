@@ -20,5 +20,15 @@ SEEN_EVENTS_FILE = "seen_events.json"
 EVENTS_MASTER_FILE = "events_master.csv"
 NEW_EVENTS_FILE_PREFIX = "new_events_"
 
-CSV_FIELDNAMES = ["name", "url", "start_date", "city", "category", "first_seen"]
+# Nombre de speakers pris en compte par événement. Chaque speaker ajoute
+# 3 colonnes : speaker_i (Nom Prénom), speaker_i_lien (LinkedIn ou réseau), info_speaker_i.
+MAX_SPEAKERS = 10
+
+BASE_CSV_FIELDNAMES = ["name", "url", "start_date", "city", "category", "organisateur", "first_seen"]
+SPEAKER_CSV_FIELDNAMES = [
+    field
+    for i in range(1, MAX_SPEAKERS + 1)
+    for field in (f"speaker_{i}", f"speaker_{i}_lien", f"info_speaker_{i}")
+]
+CSV_FIELDNAMES = BASE_CSV_FIELDNAMES + SPEAKER_CSV_FIELDNAMES
 
