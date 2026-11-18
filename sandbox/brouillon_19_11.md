@@ -19,6 +19,8 @@ Je comprends l'idée : une liste de 120 entreprises (Next 40 et French Tech 120)
 
 Risque : automatiser Google expose à un blocage (CAPTCHA, « trafic inhabituel ») et à une violation de ses conditions, même avec délais aléatoires. Je ne détaille pas comment échapper à la détection, et on n'automatise pas.
 
+Ce qui est juste et faux : lire le code source des pages n'est pas la brique interdite, l'interdit est l'automatisation des requêtes Google (conditions d'usage). Trouver une URL Luma ne suffit pas : il faut vérifier que c'est bien le calendrier de l'entreprise. Aucune brique de ce type n'est codée.
+
 ## À faire
 
 (à compléter)
