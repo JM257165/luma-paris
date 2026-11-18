@@ -21,6 +21,8 @@ Risque : automatiser Google expose à un blocage (CAPTCHA, « trafic inhabituel 
 
 Ce qui est juste et faux : lire le code source des pages n'est pas la brique interdite, l'interdit est l'automatisation des requêtes Google (conditions d'usage). Trouver une URL Luma ne suffit pas : il faut vérifier que c'est bien le calendrier de l'entreprise. Aucune brique de ce type n'est codée.
 
+Idée (non codée) : classer les URLs Luma (calendrier ou événement) par leur signature, en règles ou avec un petit modèle. Possible hors ligne sur des URLs déjà obtenues, sans requête vers Luma. L'interdit reste l'automatisation des requêtes Google, pas ce tri.
+
 ## À faire
 
 (à compléter)
