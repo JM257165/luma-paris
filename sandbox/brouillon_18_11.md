@@ -16,3 +16,7 @@ Reste :
 - Décider : hôtes en plus de l'organisateur ? Si oui, colonnes à ajouter.
 - Vérifier si la réponse discover contient featured_guests (une requête).
 - Remplir les 152 anciennes lignes via d'autres calendriers, après accord (pauses 3 à 5 s).
+
+## Invités mis en avant : ce qu'on a appris
+
+Les colonnes speaker_i du CSV remote ne sont pas des intervenants mais des invités mis en avant par Luma (10 sur 102 pour 8q8fwz0z), sans rôle ni critère de sélection connus. La description dit « no program ». L'organisateur réel est la colonne organisateur (nom du calendrier, ex. Hexa House). L'affichage peut différer de la donnée : l'hôte « Hexa » est Faustine Rohr-Lacoste dans le JSON, et le code source affiche aussi (Hexa) après son nom. Décision : on abandonne les invités mis en avant et on garde les organisateurs.
