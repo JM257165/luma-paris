@@ -34,3 +34,7 @@ Aucune requête avant ton feu vert.
 
 Décision : retirer les colonnes speaker du schéma. Si un événement déjà listé (même api_id) a un champ vide (ex. organisateur), on complète la ligne existante, sans écraser les champs remplis ni first_seen.
 - Deux endpoints : discover trouve les calendriers (futurs seulement), calendar/get-items donne passé et futur d'un calendrier connu. Exhaustivité non garantie, on accumule au fil des discover.
+
+## Bilan recherche web et méthode suivante
+
+Sur les 61 calendriers de calendar_master.csv, la recherche « Luma <nom> Paris » en retrouve 4, soit 6,6 %. Les autres ne sont pas trouvés, ou sont noyés par des homonymes (LUMA Arles, LUMAS, Luma AI). Méthode suivante : 1) dresser la liste des entreprises qui nous intéressent ; 2) chercher leur calendrier Luma avec la recherche web ; 3) pour chaque calendrier trouvé, faire deux appels (passé et futur) et récupérer tous les événements. Aucune requête vers Luma avant ton feu vert.
