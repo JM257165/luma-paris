@@ -1,4 +1,4 @@
-Choix : 3 colonnes par speaker (nom Nom Prénom, lien LinkedIn ou réseau, bio), jusqu'à 10 speakers. Entreprises abandonnées. Le lien est une colonne à part, car IMPORTDATA perd l'hypertexte. Code prêt en local, pas encore poussé.
+Ajout : colonne « organisateur » (nom du calendrier). Test sur Hexa : tous les événements et speakers du semestre, après accord sur les requêtes. Code en local, commité avec le CSV.
 
 ---
 
