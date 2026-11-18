@@ -29,3 +29,7 @@ Les colonnes speaker_i du CSV remote ne sont pas des intervenants mais des invit
 4. Proxy : à éviter. Si un blocage survient, on s'arrête et on en reparle, sans en choisir un au hasard.
 
 Aucune requête avant ton feu vert.
+
+## Événements déjà listés avec champs vides
+
+Décision : retirer les colonnes speaker du schéma. Si un événement déjà listé (même api_id) a un champ vide (ex. organisateur), on complète la ligne existante, sans écraser les champs remplis ni first_seen.
