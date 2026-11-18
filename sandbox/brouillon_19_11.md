@@ -26,3 +26,7 @@ Idée (non codée) : classer les URLs Luma (calendrier ou événement) par leur 
 ## À faire
 
 (à compléter)
+
+## Graphique (non codé)
+
+- Courbe du nombre de calendriers par jour, dans le README, pour repérer la stagnation. Plateau ≠ exhaustivité : discover ne montre que les événements à venir, donc les calendriers sans événement futur n'apparaissent pas.
