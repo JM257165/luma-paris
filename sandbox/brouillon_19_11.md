@@ -9,6 +9,10 @@ Où on en est (18/11) :
 
 Suite : API officielle à comparer (Brave, Google PSE, Exa, Tavily), séquentielle, sur ton compte.
 
+## Feature intéressante (non codée)
+
+Chaque jour, ajouter à calendar_master.csv les calendriers vus dans discover, sans doublon. Pour chaque nouveau calendrier, backfill passé et futur (2 requêtes, pauses de 3 à 5 s), puis complément d'events_master.csv sans écraser les champs remplis. Aucune requête sans ton accord.
+
 ## À faire
 
 (à compléter)
