@@ -1,4 +1,4 @@
-Ajout : colonne « organisateur » (nom du calendrier). Test sur Hexa : tous les événements et speakers du semestre, après accord sur les requêtes. Code en local, commité avec le CSV.
+Ajout : colonne « organisateur » (nom du calendrier) dans l'Excel. Test sur Hexa : tous les événements et speakers du semestre, si tu valides les requêtes.
 
 ---
 
