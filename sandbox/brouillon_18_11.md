@@ -38,3 +38,7 @@ Décision : retirer les colonnes speaker du schéma. Si un événement déjà li
 ## Bilan recherche web et méthode suivante
 
 Sur les 61 calendriers de calendar_master.csv, la recherche « Luma <nom> Paris » en retrouve 4, soit 6,6 %. Les autres ne sont pas trouvés, ou sont noyés par des homonymes (LUMA Arles, LUMAS, Luma AI). Méthode suivante : 1) dresser la liste des entreprises qui nous intéressent ; 2) chercher leur calendrier Luma avec la recherche web ; 3) pour chaque calendrier trouvé, faire deux appels (passé et futur) et récupérer tous les événements. Aucune requête vers Luma avant ton feu vert.
+
+## Recherche web v2 : résultat
+
+Requête « <nom court> calendar Paris events », restreinte à lu.ma et luma.com, avec sélection des pages dont le titre contient « Events Calendar ». Résultat : 17 calendriers retrouvés sur 61, soit **27,9 %**, contre 6,6 % avec la v1. Gains : 14 calendriers, dont Dust, Hexa, Startup Valley, swanbase et Vercel Community. Pertes : LeClub IA, retrouvé par la v1 mais pas par la v2. Limites : DR Network est rejeté à cause de son titre en français « Calendrier d'événements », et les calendriers non indexés (Alan, Modal, Tandem) restent introuvables. Prochain pas : accepter ce titre français et relancer LeClub IA.
