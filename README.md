@@ -1,101 +1,68 @@
 # Luma Event Scraper
 
-Scraper diario de eventos **tech** y **ai** publicados en [Luma](https://lu.ma). Consulta el endpoint interno de descubrimiento, deduplica por `api_id` y genera CSVs con los eventos nuevos.
+Scraper quotidien des événements **tech** et **IA** publiés sur [Luma](https://lu.ma), configuré pour Paris. Il interroge l'endpoint de découverte de Luma, dédoublonne par `api_id` et produit des CSV avec les nouveaux événements.
 
-> Basado en [mayckolco/luma-event-scraper](https://github.com/mayckolco/luma-event-scraper), con la configuración adaptada a París.
+> Basé sur [mayckolco/luma-event-scraper](https://github.com/mayckolco/luma-event-scraper).
 
-## Requisitos
+## Prérequis
 
 - Python 3.10+
-- Sin dependencias externas (solo stdlib)
+- Aucune dépendance externe (stdlib uniquement)
 
-## Uso
+## Utilisation
 
 ```bash
-# Corrida completa: scrape + persistencia
+# Exécution complète : scrape et sauvegarde
 python scraper.py
 
-# Validar conectividad y parseo (sin escribir archivos)
+# Vérifier la connexion et le parsing, sans rien écrire
 python scraper.py --dry-run
 ```
 
-## Archivos generados
+## Fichiers générés
 
-| Archivo | Descripción |
+| Fichier | Contenu |
 |---|---|
-| `seen_events.json` | Índice de deduplicación (`api_id` → `first_seen`) |
-| `events_master.csv` | Historial acumulado de todos los eventos detectados |
-| `new_events_<YYYY-MM-DD>.csv` | Solo eventos nuevos de la corrida del día |
+| `seen_events.json` | Index de déduplication (`api_id` → `first_seen`) |
+| `events_master.csv` | Historique cumulé de tous les événements détectés |
+| `new_events_<YYYY-MM-DD>.csv` | Seulement les nouveaux événements du jour |
 
-### Campos del CSV
+Champs du CSV : `name`, `url`, `start_date`, `city`, `category`, `first_seen`.
 
-`name`, `url`, `start_date`, `city`, `category`, `first_seen`
+## Configuration
 
-## Configuración
+Modifier [`config.py`](config.py), sans toucher à la logique du scraper :
 
-Editar [`config.py`](config.py) sin tocar la lógica del scraper:
+- `CATEGORIES` : slugs interrogés (par défaut `tech`, `ai`)
+- `CITIES` : liste de `{name, lat, lon}` (au moins une ville)
+- `MAX_PAGES` : limite de sécurité par couple catégorie/ville
+- `REQUEST_DELAY_MIN` / `REQUEST_DELAY_MAX` : pause aléatoire entre les requêtes
+- `MAX_RETRIES` / `RETRY_BACKOFF_BASE` : nouvelles tentatives en cas d'erreur réseau
 
-- `CATEGORIES` — slugs a consultar (default: `tech`, `ai`)
-- `CITIES` — lista de `{name, lat, lon}` (mínimo 1 ciudad)
-- `MAX_PAGES` — límite de seguridad por par categoría/ciudad
-- `REQUEST_DELAY_MIN` / `REQUEST_DELAY_MAX` — pausa aleatoria entre requests
-- `MAX_RETRIES` / `RETRY_BACKOFF_BASE` — reintentos ante fallos de red
+## Automatisation (GitHub Actions)
 
-## Automatización (GitHub Actions)
+Le workflow [`.github/workflows/scrape.yml`](.github/workflows/scrape.yml) lance le scraper :
 
-El workflow [`.github/workflows/scrape.yml`](.github/workflows/scrape.yml) ejecuta el scraper:
+- **Planifié** : `0 8 * * *` (chaque jour à 08:00 UTC)
+- **Manuel** : Actions → Daily Luma Scrape → Run workflow
+- **Sur push/PR** : le job `validate` lance `--dry-run`
 
-- **Cron:** `0 8 * * *` (08:00 UTC diario)
-- **Manual:** Actions → Daily Luma Scrape → Run workflow
-- **En push/PR:** job `validate` corre `--dry-run`
+## Maintenance
 
-Los archivos de estado se commitean automáticamente al repo tras cada corrida programada.
+- **Changer villes ou catégories** : modifier `config.py`, lancer `python scraper.py --dry-run`, la run suivante utilisera la nouvelle config.
+- **Si l'endpoint Luma change** : consulter le compteur `Advertencias de esquema` (texte du log, encore en espagnol) dans le résumé de run, inspecter le payload brut signalé par `extract_entries`, puis adapter `parse_entry()` dans `scraper.py`.
 
-## Mantenimiento
+## Documentation du projet
 
-### Actualizar ciudades o categorías
+- [prd.md](prd.md) : spécification produit
+- [roadmap.md](roadmap.md) : plan de développement et avancement
+- [alcance.html](alcance.html) : vue visuelle du périmètre
+- [dashboard.html](dashboard.html) : tableau de bord interactif des événements
 
-1. Editar `config.py`
-2. Correr `python scraper.py --dry-run` para validar
-3. La siguiente corrida usará la nueva configuración
-
-### Verificar que el pipeline funciona
-
-```bash
-python scraper.py --dry-run          # conectividad + parseo
-python scraper.py                    # corrida completa
-python scraper.py                    # segunda corrida → 0 duplicados falsos
-```
-
-### Monitorear una corrida
-
-Al finalizar, el scraper imprime un resumen:
+## Structure
 
 ```
---- Resumen de corrida ---
-Combinaciones exitosas: 12 / 12
-Eventos consultados: ...
-Eventos nuevos guardados: ...
-Errores de parseo: ...
-```
-
-### Si el endpoint de Luma cambia
-
-- Revisar logs con `Advertencias de esquema`
-- Inspeccionar el payload crudo en los warnings de `extract_entries`
-- Actualizar `parse_entry()` en `scraper.py` si cambió la estructura
-
-## Documentación del proyecto
-
-- [prd.md](prd.md) — especificación del producto
-- [roadmap.md](roadmap.md) — plan de desarrollo y progreso
-- [alcance.html](alcance.html) — vista visual del alcance
-- [dashboard.html](dashboard.html) — dashboard interactivo de eventos
-
-## Estructura
-
-```
-scraper.py          # Entry point y lógica principal
-config.py           # Configuración editable
-.github/workflows/  # CI/CD programado
+scraper.py          # Point d'entrée et logique principale
+config.py           # Configuration modifiable
+.github/workflows/  # Automatisation planifiée
 ```
