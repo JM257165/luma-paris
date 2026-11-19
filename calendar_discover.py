@@ -3,7 +3,10 @@
 
 Usage :
     python calendar_discover.py            # requêtes + affichage, n'écrit rien
-    python calendar_discover.py --write    # écrit calendar_master.csv
+    python calendar_discover.py --write    # ajoute les nouveaux calendriers à calendar_master.csv
+
+calendar_master.csv s'accumule : un calendrier déjà présent n'est jamais supprimé
+ni recopié. Seuls les calendriers absents sont renvoyés comme « nouveaux ».
 
 Garde-fous :
 - 2 catégories (tech, ai), 1 page chacune par défaut, pagination bornée
@@ -30,7 +33,7 @@ log = logging.getLogger("calendar_discover")
 MAX_PAGES_PER_CATEGORY = 5
 RAW_DIR = Path.home() / "luma-discover-raw"
 CALENDAR_MASTER_FILE = Path(__file__).resolve().parent / "calendar_master.csv"
-CALENDAR_FIELDNAMES = ["nom", "url"]
+CALENDAR_FIELDNAMES = ["nom", "url", "calendar_api_id"]
 CALENDAR_URL_PREFIX = "https://lu.ma/"
 
 
@@ -64,6 +67,7 @@ def _raw_request(category: str, city: dict, cursor: str | None) -> dict:
 
 
 def collect_calendars(entries: list[dict]) -> dict[str, dict]:
+    """Retourne {calendar_api_id: {nom, url, calendar_api_id}} pour les entrées valides."""
     calendars: dict[str, dict] = {}
     for entry in entries:
         calendar = entry.get("calendar")
@@ -74,53 +78,109 @@ def collect_calendars(entries: list[dict]) -> dict[str, dict]:
         name = (calendar.get("name") or "").strip()
         if not api_id or not slug or not name:
             continue
-        calendars.setdefault(api_id, {"nom": name, "url": f"{CALENDAR_URL_PREFIX}{slug}"})
+        calendars.setdefault(
+            api_id,
+            {"nom": name, "url": f"{CALENDAR_URL_PREFIX}{slug}", "calendar_api_id": api_id},
+        )
     return calendars
 
 
-def write_calendar_master(calendars: dict[str, dict]) -> None:
-    rows = sorted(calendars.values(), key=lambda row: row["nom"].lower())
+def discover_calendars() -> dict[str, dict]:
+    """Interroge discover pour chaque catégorie. Lève StopDiscover en cas de refus réseau."""
+    city = config.CITIES[0]
+    found: dict[str, dict] = {}
+    for category in config.CATEGORIES:
+        cursor: str | None = None
+        for page_no in range(1, MAX_PAGES_PER_CATEGORY + 1):
+            payload = fetch_page(category, city, cursor, page_no)
+            entries = scraper.extract_entries(payload)
+            page_found = collect_calendars(entries)
+            found.update({k: v for k, v in page_found.items() if k not in found})
+            log.info("%s page %d : %d entrées, %d calendriers", category, page_no, len(entries), len(page_found))
+            cursor = payload.get("next_cursor")
+            if not cursor or not payload.get("has_more", bool(cursor)):
+                break
+            time.sleep(random.uniform(config.REQUEST_DELAY_MIN, config.REQUEST_DELAY_MAX))
+        time.sleep(random.uniform(config.REQUEST_DELAY_MIN, config.REQUEST_DELAY_MAX))
+    return found
+
+
+def read_calendar_master() -> list[dict]:
+    """Lit calendar_master.csv. Liste vide si le fichier n'existe pas encore."""
+    if not CALENDAR_MASTER_FILE.exists():
+        return []
+    with CALENDAR_MASTER_FILE.open(newline="", encoding="utf-8") as handle:
+        return [
+            {
+                "nom": row.get("nom", ""),
+                "url": row.get("url", ""),
+                "calendar_api_id": row.get("calendar_api_id", "") or "",
+            }
+            for row in csv.DictReader(handle)
+        ]
+
+
+def merge_calendars(existing: list[dict], found: dict[str, dict]) -> tuple[list[dict], list[dict]]:
+    """
+    Fusionne les calendriers trouvés dans l'existant, sans doublon.
+
+    Retourne (rows, added) :
+    - rows : l'existant, avec calendar_api_id complété quand l'URL était déjà connue
+      (ce n'est pas un nouveau calendrier, donc pas de backfill).
+    - added : les calendriers réellement nouveaux, à backfiller. Ils ne sont pas
+      ajoutés à rows ici : c'est à l'appelant de le faire après un backfill réussi.
+    """
+    rows = [dict(row) for row in existing]
+    by_id = {row["calendar_api_id"]: row for row in rows if row["calendar_api_id"]}
+    by_url = {row["url"]: row for row in rows}
+    added: list[dict] = []
+    for api_id, calendar in found.items():
+        if api_id in by_id:
+            continue
+        known = by_url.get(calendar["url"])
+        if known is not None:
+            known["calendar_api_id"] = api_id
+            by_id[api_id] = known
+            continue
+        added.append(dict(calendar))
+    return rows, added
+
+
+def write_calendar_master(rows: list[dict]) -> None:
+    ordered = sorted(rows, key=lambda row: row["nom"].lower())
     with CALENDAR_MASTER_FILE.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=CALENDAR_FIELDNAMES)
         writer.writeheader()
-        writer.writerows(rows)
-    log.info("Écrit : %d calendriers dans %s", len(rows), CALENDAR_MASTER_FILE)
+        writer.writerows(ordered)
+    log.info("Écrit : %d calendriers dans %s", len(ordered), CALENDAR_MASTER_FILE)
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Liste des calendriers Luma tech/IA à Paris")
-    parser.add_argument("--write", action="store_true", help="écrire calendar_master.csv")
+    parser.add_argument("--write", action="store_true", help="ajouter les nouveaux calendriers à calendar_master.csv")
     args = parser.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-    city = config.CITIES[0]
-    all_calendars: dict[str, dict] = {}
     try:
-        for category in config.CATEGORIES:
-            cursor: str | None = None
-            for page_no in range(1, MAX_PAGES_PER_CATEGORY + 1):
-                payload = fetch_page(category, city, cursor, page_no)
-                entries = scraper.extract_entries(payload)
-                found = collect_calendars(entries)
-                all_calendars.update({k: v for k, v in found.items() if k not in all_calendars})
-                log.info("%s page %d : %d entrées, %d calendriers nouveaux", category, page_no, len(entries), len(found))
-                cursor = payload.get("next_cursor")
-                if not cursor or not payload.get("has_more", bool(cursor)):
-                    break
-                time.sleep(random.uniform(config.REQUEST_DELAY_MIN, config.REQUEST_DELAY_MAX))
-            time.sleep(random.uniform(config.REQUEST_DELAY_MIN, config.REQUEST_DELAY_MAX))
+        found = discover_calendars()
     except StopDiscover as exc:
         log.error("Arrêt : %s", exc)
         return 1
 
-    print(f"\nCalendriers trouvés : {len(all_calendars)}")
-    for row in sorted(all_calendars.values(), key=lambda r: r["nom"].lower()):
-        print(f"  {row['nom']} — {row['url']}")
+    existing = read_calendar_master()
+    rows, added = merge_calendars(existing, found)
+    print(f"\nCalendriers trouvés par discover : {len(found)}")
+    print(f"Déjà connus : {len(found) - len(added)} · nouveaux : {len(added)}")
+    for row in sorted(added, key=lambda r: r["nom"].lower()):
+        print(f"  + {row['nom']} — {row['url']}")
 
     if not args.write:
         print("\nMode lecture : rien n'a été écrit. Relance avec --write.")
         return 0
-    write_calendar_master(all_calendars)
+    # Les nouveaux calendriers ne sont enregistrés qu'après leur backfill : voir daily_update.py.
+    write_calendar_master(rows)
+    if added:
+        print("\nLes nouveaux calendriers ne sont pas ajoutés ici : lance daily_update.py pour les backfiller.")
     return 0
 
 

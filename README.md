@@ -1,5 +1,10 @@
 # Luma Event Scraper
 
+<p align="center">
+  <img src="charts/evenements_cumul.svg" width="48%" alt="Événements uniques, cumul par jour">
+  <img src="charts/calendriers_cumul.svg" width="48%" alt="Calendriers uniques, cumul par jour">
+</p>
+
 Scraper quotidien des événements **tech** et **IA** publiés sur [Luma](https://lu.ma), configuré pour Paris. Il interroge l'endpoint de découverte de Luma, dédoublonne par `api_id` et produit des CSV avec les nouveaux événements.
 
 > Basé sur [mayckolco/luma-event-scraper](https://github.com/mayckolco/luma-event-scraper).
@@ -26,8 +31,26 @@ python scraper.py --dry-run
 | `seen_events.json` | Index de déduplication (`api_id` → `first_seen`) |
 | `events_master.csv` | Historique cumulé de tous les événements détectés |
 | `new_events_<YYYY-MM-DD>.csv` | Seulement les nouveaux événements du jour |
+| `calendar_master.csv` | Calendriers Luma connus (`nom`, `url`, `calendar_api_id`), cumulés |
+| `stats_daily.csv` | Une ligne par jour : totaux uniques d'événements et de calendriers |
+| `charts/*.svg` | Graphiques des totaux cumulés, générés depuis `stats_daily.csv` |
 
-Champs du CSV : `name`, `url`, `start_date`, `city`, `category`, `first_seen`.
+Champs de `events_master.csv` : `name`, `url`, `start_date`, `city`, `category`, `organisateur`, `first_seen`, puis `speaker_1` à `speaker_10` avec leur lien (`speaker_N_lien`) et info (`info_speaker_N`).
+
+## Calendriers et graphiques (`daily_update.py`)
+
+- Interroge discover, ne réinterroge jamais un calendrier déjà connu.
+- Backfille chaque **nouveau** calendrier (passé et futur, 2 requêtes) et ne l'enregistre qu'en cas de succès.
+- Ajoute une ligne à `stats_daily.csv` et régénère les graphiques.
+- Sans `--write`, ne fait que la découverte et affiche les nouveaux calendriers.
+
+```bash
+python daily_update.py            # aperçu : discover seulement
+python daily_update.py --write    # backfill des nouveaux + stats + graphiques
+python backfill_calendar.py --calendar-api-id cal-xxxx --write   # un calendrier à la main
+```
+
+Les graphiques apparaissent après le premier run de `daily_update.py --write`.
 
 ## Configuration
 
