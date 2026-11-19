@@ -35,3 +35,4 @@ Idée (non codée) : classer les URLs Luma (calendrier ou événement) par leur 
 
 - Faire tourner le run (backfill des nouveaux calendriers, puis stats_daily.csv et graphiques) après validation du code. Aucune requête vers Luma avant ton accord.
 - Colonne backfilled dans calendar_master.csv : Non partout, Oui après backfill réussi. Demain : backfill des Non. Back Market, Crème de la Crème, HomeExchange sans identifiant : à résoudre avant.
+- Erreur 401 au 19e calendrier : sûrement un autre job lancé en parallèle sur Luma. Bonne pratique : ne jamais lancer plusieurs jobs Luma en même temps.
