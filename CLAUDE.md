@@ -6,6 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A daily scraper for tech/AI events on Luma (lu.ma) using Luma's undocumented internal JSON endpoint (`api.luma.com/discover/get-paginated-events`). No official API key required. The script runs once per day via cron or GitHub Actions.
 
+## Working Repository
+
+- Work only in `C:\Users\jeanm\luma-paris` (branch `main`, remote `origin` = `Jean8900/luma-paris`).
+- Do not switch to another repository or directory, even if a task seems to belong there: several remote-control sessions run in parallel on this project, and a switch causes conflicts. Ask the user first.
+
 ## Commands
 
 Once implemented, the expected entry point will be:
@@ -52,5 +57,7 @@ GitHub Actions workflow (`.github/workflows/scrape.yml`) scheduled with `cron: '
 
 Luma's undocumented endpoint behavior:
 - Accepts `slug` (category), `latitude`, `longitude`, and `pagination_cursor` query params.
+- `slug` is optional (tested 2026-11-18, Paris): without it, the endpoint returns a mixed feed (tech, AI and others) sorted by start date. It accepts only one slug per request: `slug=tech&slug=ai` and `slug=tech,ai` fail, so tech OR AI means two requests merged client-side.
+- No config switch exists yet to disable the slug filter: `scraper.py` rejects an empty `CATEGORIES` list. Adding one (e.g. `USE_SLUG = False`) would require a code change.
 - Returns a JSON payload with an `events` array and optional `next_cursor`.
 - Schema may change without notice — log raw response on unexpected shapes (Risk table in PRD section 10).
