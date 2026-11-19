@@ -16,8 +16,8 @@ A daily scraper for tech/AI events on Luma (lu.ma) using Luma's undocumented int
 Once implemented, the expected entry point will be:
 
 ```bash
-python scraper.py          # run a single scrape session
-python scraper.py --dry-run  # run without writing output files (validate connectivity)
+python src/scraper.py          # run a single scrape session
+python src/scraper.py --dry-run  # run without writing output files (validate connectivity)
 ```
 
 ## Architecture
@@ -30,12 +30,12 @@ python scraper.py --dry-run  # run without writing output files (validate connec
 3. Append new events to `events_master.csv` and write `new_events_<YYYY-MM-DD>.csv`.
 4. Update `seen_events.json` with newly seen `api_id`s.
 
-**State files (all local, gitignored):**
-- `seen_events.json` — deduplication index keyed by `api_id`
-- `events_master.csv` — append-only master history
-- `new_events_<YYYY-MM-DD>.csv` — today's new events only
+**State files (all in `data/`, committed by CI):**
+- `data/seen_events.json` — deduplication index keyed by `api_id`
+- `data/events_master.csv` — append-only master history
+- `data/new_events/new_events_<YYYY-MM-DD>.csv` — today's new events only
 
-**Configuration (top of script or `config.py`):**
+**Configuration (`src/config.py`):**
 - Categories: `["tech", "ai"]`
 - Cities: list of `{name, lat, lon}` dicts — at least 5 cities (requirement RF-10)
 - Max pages per request series, delay between requests

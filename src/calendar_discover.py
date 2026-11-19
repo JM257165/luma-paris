@@ -32,7 +32,7 @@ log = logging.getLogger("calendar_discover")
 
 MAX_PAGES_PER_CATEGORY = 5
 RAW_DIR = Path.home() / "luma-discover-raw"
-CALENDAR_MASTER_FILE = Path(__file__).resolve().parent / "calendar_master.csv"
+CALENDAR_MASTER_FILE = config.CALENDAR_MASTER_FILE
 CALENDAR_FIELDNAMES = ["nom", "url", "calendar_api_id", "backfilled"]
 BACKFILL_NO = "Non"
 BACKFILL_YES = "Oui"

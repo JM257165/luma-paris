@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   validate:
-    name: Validar conectividad (--dry-run)
+    name: Valider la connectivité (--dry-run)
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     steps:
@@ -27,10 +27,10 @@ jobs:
           python-version: "3.12"
 
       - name: Dry-run
-        run: python scraper.py --dry-run
+        run: python src/scraper.py --dry-run
 
   scrape:
-    name: Ejecutar scraper diario
+    name: Exécuter le scraper quotidien
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
@@ -43,16 +43,16 @@ jobs:
           python-version: "3.12"
 
       - name: Run scraper
-        run: python scraper.py
+        run: python src/scraper.py
 
       - name: Commit state files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f seen_events.json events_master.csv new_events_*.csv 2>/dev/null || true
+          git add -f data/ 2>/dev/null || true
           if git diff --staged --quiet; then
-            echo "No hay cambios en archivos de estado"
+            echo "Aucun changement dans les fichiers d'état"
           else
-            git commit -m "chore: actualizar estado del scraper $(date -u +%Y-%m-%d)"
+            git commit -m "chore: mise à jour de l'état du scraper $(date -u +%Y-%m-%d)"
             git push
           fi

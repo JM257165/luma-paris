@@ -11,9 +11,10 @@ import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-ROOT = Path(__file__).resolve().parent
-STATS_FILE = ROOT / "stats_daily.csv"
-CHARTS_DIR = ROOT / "charts"
+import config
+
+STATS_FILE = config.STATS_DAILY_FILE
+CHARTS_DIR = config.CHARTS_DIR
 STATS_FIELDNAMES = ["date", "evenements_uniques", "calendriers_uniques"]
 
 WIDTH = 640

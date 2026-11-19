@@ -1,4 +1,10 @@
-"""Configuración del scraper — editable sin tocar la lógica central (RF-10)."""
+"""Configuration du scraper — modifiable sans toucher à la logique centrale (RF-10)."""
+
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = ROOT_DIR / "data"
+CHARTS_DIR = ROOT_DIR / "charts"
 
 CATEGORIES = ["tech", "ai"]
 
@@ -16,9 +22,12 @@ REQUEST_TIMEOUT = 30
 API_BASE_URL = "https://api.luma.com/discover/get-paginated-events"
 USER_AGENT = "luma-event-scraper/0.1"
 
-SEEN_EVENTS_FILE = "seen_events.json"
-EVENTS_MASTER_FILE = "events_master.csv"
+SEEN_EVENTS_FILE = DATA_DIR / "seen_events.json"
+EVENTS_MASTER_FILE = DATA_DIR / "events_master.csv"
+NEW_EVENTS_DIR = DATA_DIR / "new_events"
 NEW_EVENTS_FILE_PREFIX = "new_events_"
+CALENDAR_MASTER_FILE = DATA_DIR / "calendar_master.csv"
+STATS_DAILY_FILE = DATA_DIR / "stats_daily.csv"
 
 # Nombre de speakers pris en compte par événement. Chaque speaker ajoute
 # 3 colonnes : speaker_i (Nom Prénom), speaker_i_lien (LinkedIn ou réseau), info_speaker_i.
@@ -31,4 +40,3 @@ SPEAKER_CSV_FIELDNAMES = [
     for field in (f"speaker_{i}", f"speaker_{i}_lien", f"info_speaker_{i}")
 ]
 CSV_FIELDNAMES = BASE_CSV_FIELDNAMES + SPEAKER_CSV_FIELDNAMES
-

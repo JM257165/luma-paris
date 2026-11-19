@@ -18,43 +18,55 @@ Scraper quotidien des événements **tech** et **IA** publiés sur [Luma](https:
 
 ```bash
 # Exécution complète : scrape et sauvegarde
-python scraper.py
+python src/scraper.py
 
 # Vérifier la connexion et le parsing, sans rien écrire
-python scraper.py --dry-run
+python src/scraper.py --dry-run
 ```
 
-## Fichiers générés
+## Structure
+
+```
+src/                # Code source (scraper, config, calendriers, graphiques)
+data/               # Données et état (CSV, index de déduplication)
+  new_events/       # Un CSV par jour : nouveaux événements
+docs/               # Spécification, roadmap, périmètre, tableau de bord
+tests/              # Tests unitaires (sans réseau)
+charts/             # Graphiques SVG générés
+.github/workflows/  # Automatisation planifiée
+```
+
+## Fichiers de données (`data/`)
 
 | Fichier | Contenu |
 |---|---|
-| `seen_events.json` | Index de déduplication (`api_id` → `first_seen`) |
-| `events_master.csv` | Historique cumulé de tous les événements détectés |
-| `new_events_<YYYY-MM-DD>.csv` | Seulement les nouveaux événements du jour |
-| `calendar_master.csv` | Calendriers Luma connus (`nom`, `url`, `calendar_api_id`), cumulés |
-| `stats_daily.csv` | Une ligne par jour : totaux uniques d'événements et de calendriers |
-| `charts/*.svg` | Graphiques des totaux cumulés, générés depuis `stats_daily.csv` |
+| `data/seen_events.json` | Index de déduplication (`api_id` → `first_seen`) |
+| `data/events_master.csv` | Historique cumulé de tous les événements détectés |
+| `data/new_events/new_events_<YYYY-MM-DD>.csv` | Seulement les nouveaux événements du jour |
+| `data/calendar_master.csv` | Calendriers Luma connus (`nom`, `url`, `calendar_api_id`, `backfilled`), cumulés |
+| `data/stats_daily.csv` | Une ligne par jour : totaux uniques d'événements et de calendriers |
+| `charts/*.svg` | Graphiques des totaux cumulés, générés depuis `data/stats_daily.csv` |
 
 Champs de `events_master.csv` : `name`, `url`, `start_date`, `city`, `category`, `organisateur`, `first_seen`, puis `speaker_1` à `speaker_10` avec leur lien (`speaker_N_lien`) et info (`info_speaker_N`).
 
-## Calendriers et graphiques (`daily_update.py`)
+## Calendriers et graphiques (`src/daily_update.py`)
 
 - Interroge discover, ne réinterroge jamais un calendrier déjà connu.
 - Backfille chaque **nouveau** calendrier (passé et futur, 2 requêtes) et ne l'enregistre qu'en cas de succès.
-- Ajoute une ligne à `stats_daily.csv` et régénère les graphiques.
+- Ajoute une ligne à `data/stats_daily.csv` et régénère les graphiques.
 - Sans `--write`, ne fait que la découverte et affiche les nouveaux calendriers.
 
 ```bash
-python daily_update.py            # aperçu : discover seulement
-python daily_update.py --write    # backfill des nouveaux + stats + graphiques
-python backfill_calendar.py --calendar-api-id cal-xxxx --write   # un calendrier à la main
+python src/daily_update.py            # aperçu : discover seulement
+python src/daily_update.py --write    # backfill des nouveaux + stats + graphiques
+python src/backfill_calendar.py --calendar-api-id cal-xxxx --write   # un calendrier à la main
 ```
 
-Les graphiques apparaissent après le premier run de `daily_update.py --write`.
+Les graphiques apparaissent après le premier run de `src/daily_update.py --write`.
 
 ## Configuration
 
-Modifier [`config.py`](config.py), sans toucher à la logique du scraper :
+Modifier [`src/config.py`](src/config.py), sans toucher à la logique du scraper :
 
 - `CATEGORIES` : slugs interrogés (par défaut `tech`, `ai`)
 - `CITIES` : liste de `{name, lat, lon}` (au moins une ville)
@@ -70,22 +82,16 @@ Le workflow [`.github/workflows/scrape.yml`](.github/workflows/scrape.yml) lance
 - **Manuel** : Actions → Daily Luma Scrape → Run workflow
 - **Sur push/PR** : le job `validate` lance `--dry-run`
 
+Après chaque run planifié, le workflow commite `data/` dans le dépôt.
+
 ## Maintenance
 
-- **Changer villes ou catégories** : modifier `config.py`, lancer `python scraper.py --dry-run`, la run suivante utilisera la nouvelle config.
-- **Si l'endpoint Luma change** : consulter le compteur `Advertencias de esquema` (texte du log, encore en espagnol) dans le résumé de run, inspecter le payload brut signalé par `extract_entries`, puis adapter `parse_entry()` dans `scraper.py`.
+- **Changer villes ou catégories** : modifier `src/config.py`, lancer `python src/scraper.py --dry-run`, la run suivante utilisera la nouvelle config.
+- **Si l'endpoint Luma change** : consulter le compteur `Avertissements de schéma` dans le résumé de run, inspecter le payload brut signalé par `extract_entries`, puis adapter `parse_entry()` dans `src/scraper.py`.
 
 ## Documentation du projet
 
-- [prd.md](prd.md) : spécification produit
-- [roadmap.md](roadmap.md) : plan de développement et avancement
-- [alcance.html](alcance.html) : vue visuelle du périmètre
-- [dashboard.html](dashboard.html) : tableau de bord interactif des événements
-
-## Structure
-
-```
-scraper.py          # Point d'entrée et logique principale
-config.py           # Configuration modifiable
-.github/workflows/  # Automatisation planifiée
-```
+- [docs/prd.md](docs/prd.md) : spécification produit
+- [docs/roadmap.md](docs/roadmap.md) : plan de développement et avancement
+- [docs/alcance.html](docs/alcance.html) : vue visuelle du périmètre
+- [docs/dashboard.html](docs/dashboard.html) : tableau de bord interactif des événements (à ouvrir via `python -m http.server 8000` à la racine, puis `http://localhost:8000/docs/dashboard.html`)

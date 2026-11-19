@@ -56,13 +56,13 @@ def setup_logging() -> None:
 
 def validate_config() -> None:
     if not config.CATEGORIES:
-        raise ValueError("CATEGORIES no puede estar vacío")
+        raise ValueError("CATEGORIES ne peut pas être vide")
     if len(config.CITIES) < 1:
-        raise ValueError(f"Se requiere al menos 1 ciudad, hay {len(config.CITIES)}")
+        raise ValueError(f"Au moins 1 ville est requise, il y en a {len(config.CITIES)}")
     for city in config.CITIES:
         for key in ("name", "lat", "lon"):
             if key not in city:
-                raise ValueError(f"Ciudad incompleta (falta '{key}'): {city}")
+                raise ValueError(f"Ville incomplète (champ '{key}' manquant) : {city}")
 
 
 def build_request_url(category: str, city: dict, cursor: str | None = None) -> str:
@@ -97,7 +97,7 @@ def fetch_page(
     cursor: str | None = None,
     stats: RunStats | None = None,
 ) -> dict:
-    """Consulta una página con reintentos y backoff exponencial (RF-8)."""
+    """Interroge une page avec relances et backoff exponentiel (RF-8)."""
     for attempt in range(config.MAX_RETRIES + 1):
         try:
             return fetch_page_once(category, city, cursor)
@@ -112,7 +112,7 @@ def fetch_page(
 
             wait = config.RETRY_BACKOFF_BASE ** attempt + random.uniform(0, 1)
             log.warning(
-                "Reintento %d/%d en %.1fs (%s / %s): %s",
+                "Nouvelle tentative %d/%d dans %.1fs (%s / %s) : %s",
                 attempt + 1,
                 config.MAX_RETRIES,
                 wait,
@@ -122,7 +122,7 @@ def fetch_page(
             )
             time.sleep(wait)
 
-    raise RuntimeError("fetch_page agotó reintentos sin respuesta")
+    raise RuntimeError("fetch_page a épuisé les tentatives sans réponse")
 
 
 def extract_entries(payload: dict, stats: RunStats | None = None) -> list:
@@ -131,7 +131,7 @@ def extract_entries(payload: dict, stats: RunStats | None = None) -> list:
         if stats:
             stats.schema_warnings += 1
         log.warning(
-            "Respuesta inesperada — claves: %s | payload: %s",
+            "Réponse inattendue — clés : %s | payload : %s",
             list(payload.keys()),
             json.dumps(payload)[:500],
         )
@@ -140,7 +140,7 @@ def extract_entries(payload: dict, stats: RunStats | None = None) -> list:
         if stats:
             stats.schema_warnings += 1
         log.warning(
-            "Campo de eventos no es una lista: %s | payload: %s",
+            "Le champ d'événements n'est pas une liste : %s | payload : %s",
             type(entries).__name__,
             json.dumps(payload)[:500],
         )
@@ -180,7 +180,7 @@ def build_speaker_link(guest: dict) -> str:
 
 
 def extract_speakers(entry: dict, event_data: dict) -> list[dict]:
-    """Extrae los speakers (featured_guests) con nombre, enlace e info de bio."""
+    """Extrait les speakers (featured_guests) : nom, lien et bio."""
     guests = entry.get("featured_guests") or event_data.get("featured_guests") or []
     if not isinstance(guests, list):
         return []
@@ -207,10 +207,10 @@ def parse_entry(entry: dict, category: str, city_name: str) -> Event | None:
     start_date = event_data.get("start_at") or event_data.get("start_date")
 
     if not api_id:
-        log.warning("Evento sin api_id, omitiendo: %s", json.dumps(entry)[:200])
+        log.warning("Événement sans api_id, ignoré : %s", json.dumps(entry)[:200])
         return None
     if not name or not slug or not start_date:
-        log.warning("Evento %s con campos incompletos (name/url/start_date)", api_id)
+        log.warning("Événement %s : champs incomplets (name/url/start_date)", api_id)
         return None
 
     speakers = extract_speakers(entry, event_data)
@@ -218,7 +218,7 @@ def parse_entry(entry: dict, category: str, city_name: str) -> Event | None:
     organisateur = (calendar.get("name") or "").strip() if isinstance(calendar, dict) else ""
     if len(speakers) > config.MAX_SPEAKERS:
         log.warning(
-            "Evento %s con %d speakers, solo se guardan %d",
+            "Événement %s : %d speakers, seuls %d sont conservés",
             api_id,
             len(speakers),
             config.MAX_SPEAKERS,
@@ -242,7 +242,7 @@ def sleep_between_requests() -> None:
 
 
 def scrape_pair(category: str, city: dict, stats: RunStats) -> list[Event]:
-    """Consulta y pagina el endpoint para un par (categoría, ciudad)."""
+    """Interroge et pagine l'endpoint pour un couple (catégorie, ville)."""
     events: list[Event] = []
     cursor: str | None = None
 
@@ -255,13 +255,13 @@ def scrape_pair(category: str, city: dict, stats: RunStats) -> list[Event]:
                 event = parse_entry(entry, category, city["name"])
             except (KeyError, TypeError, AttributeError, ValueError) as exc:
                 stats.parse_errors += 1
-                log.warning("Error parseando evento: %s | entrada: %s", exc, json.dumps(entry)[:200])
+                log.warning("Erreur de parsing d'un événement : %s | entrée : %s", exc, json.dumps(entry)[:200])
                 continue
             if event:
                 events.append(event)
 
         log.info(
-            "  página %d: %d entradas (%d parseadas acumuladas)",
+            "  page %d : %d entrées (%d parsées au total)",
             page,
             len(entries),
             len(events),
@@ -276,7 +276,7 @@ def scrape_pair(category: str, city: dict, stats: RunStats) -> list[Event]:
 
     else:
         log.warning(
-            "Límite de seguridad alcanzado (%d páginas) para %s / %s",
+            "Limite de sécurité atteinte (%d pages) pour %s / %s",
             config.MAX_PAGES,
             category,
             city["name"],
@@ -286,18 +286,18 @@ def scrape_pair(category: str, city: dict, stats: RunStats) -> list[Event]:
 
 
 def scrape_all(stats: RunStats) -> list[Event]:
-    """Consulta todas las combinaciones categoría × ciudad con dedup en memoria."""
+    """Interroge toutes les combinaisons catégorie × ville, avec déduplication en mémoire."""
     pairs = [(cat, city) for cat in config.CATEGORIES for city in config.CITIES]
     seen_ids: set[str] = set()
     all_events: list[Event] = []
 
     for index, (category, city) in enumerate(pairs):
-        log.info("Consultando %s / %s", category, city["name"])
+        log.info("Interrogation de %s / %s", category, city["name"])
         try:
             pair_events = scrape_pair(category, city, stats)
         except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError) as exc:
             stats.pairs_failed += 1
-            log.error("Par %s / %s falló tras reintentos: %s", category, city["name"], exc)
+            log.error("Couple %s / %s en échec après relances : %s", category, city["name"], exc)
             continue
 
         stats.pairs_succeeded += 1
@@ -310,7 +310,7 @@ def scrape_all(stats: RunStats) -> list[Event]:
             new_in_pair += 1
 
         log.info(
-            "  %s / %s: %d eventos únicos en esta corrida",
+            "  %s / %s : %d événements uniques dans ce run",
             category,
             city["name"],
             new_in_pair,
@@ -326,11 +326,11 @@ def scrape_all(stats: RunStats) -> list[Event]:
 def new_events_filepath(run_date: date | None = None) -> Path:
     run_date = run_date or date.today()
     filename = f"{config.NEW_EVENTS_FILE_PREFIX}{run_date.isoformat()}.csv"
-    return Path(filename)
+    return config.NEW_EVENTS_DIR / filename
 
 
 def load_seen_events() -> dict[str, str]:
-    """Carga el índice de deduplicación: api_id → first_seen (RF-3, RF-4)."""
+    """Charge l'index de déduplication : api_id → first_seen (RF-3, RF-4)."""
     path = Path(config.SEEN_EVENTS_FILE)
     if not path.exists():
         return {}
@@ -339,7 +339,7 @@ def load_seen_events() -> dict[str, str]:
         with path.open(encoding="utf-8") as handle:
             data = json.load(handle)
     except (json.JSONDecodeError, OSError) as exc:
-        log.warning("No se pudo leer %s (%s), iniciando índice vacío", path, exc)
+        log.warning("Impossible de lire %s (%s), index vide utilisé", path, exc)
         return {}
 
     if isinstance(data, dict):
@@ -347,12 +347,13 @@ def load_seen_events() -> dict[str, str]:
     if isinstance(data, list):
         return {api_id: "" for api_id in data}
 
-    log.warning("Formato inesperado en %s, iniciando índice vacío", path)
+    log.warning("Format inattendu dans %s, index vide utilisé", path)
     return {}
 
 
 def save_seen_events(seen: dict[str, str]) -> None:
     path = Path(config.SEEN_EVENTS_FILE)
+    path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         json.dump(seen, handle, indent=2, sort_keys=True)
         handle.write("\n")
@@ -380,6 +381,7 @@ def append_csv(path: Path, rows: list[dict[str, str]]) -> None:
     if not rows:
         return
 
+    path.parent.mkdir(parents=True, exist_ok=True)
     write_header = not path.exists() or path.stat().st_size == 0
     with path.open("a", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=config.CSV_FIELDNAMES)
@@ -405,8 +407,8 @@ def filter_new_events(events: list[Event], seen: dict[str, str]) -> list[Event]:
 
 def persist_results(events: list[Event], run_date: date | None = None) -> tuple[int, int]:
     """
-    Deduplica contra seen_events.json y escribe CSVs (RF-5, RF-6).
-    Retorna (total_consultados, total_nuevos).
+    Déduplique par rapport à seen_events.json et écrit les CSV (RF-5, RF-6).
+    Retourne (total_consultés, total_nouveaux).
     """
     run_date = run_date or date.today()
     first_seen = run_date.isoformat()
@@ -428,61 +430,61 @@ def persist_results(events: list[Event], run_date: date | None = None) -> tuple[
 
 
 def log_run_summary(stats: RunStats) -> None:
-    """Resumen estructurado de la corrida (RF-9)."""
+    """Résumé structuré du run (RF-9)."""
     total_pairs = len(config.CATEGORIES) * len(config.CITIES)
-    log.info("--- Resumen de corrida ---")
-    log.info("Combinaciones exitosas: %d / %d", stats.pairs_succeeded, total_pairs)
-    log.info("Eventos consultados: %d", stats.events_consulted)
-    log.info("Eventos nuevos guardados: %d", stats.events_new)
-    log.info("Errores de parseo: %d", stats.parse_errors)
-    log.info("Errores de red: %d", stats.network_errors)
-    log.info("Advertencias de esquema: %d", stats.schema_warnings)
-    log.info("Reintentos de red: %d", stats.retries)
+    log.info("--- Résumé du run ---")
+    log.info("Couples réussis : %d / %d", stats.pairs_succeeded, total_pairs)
+    log.info("Événements consultés : %d", stats.events_consulted)
+    log.info("Nouveaux événements enregistrés : %d", stats.events_new)
+    log.info("Erreurs de parsing : %d", stats.parse_errors)
+    log.info("Erreurs réseau : %d", stats.network_errors)
+    log.info("Avertissements de schéma : %d", stats.schema_warnings)
+    log.info("Relances réseau : %d", stats.retries)
     if stats.pairs_failed:
-        log.warning("Combinaciones fallidas: %d", stats.pairs_failed)
+        log.warning("Couples en échec : %d", stats.pairs_failed)
 
 
 def dry_run() -> int:
-    """Valida configuración y conectividad sin escribir archivos de salida."""
+    """Valide la configuration et la connectivité sans écrire de fichiers."""
     validate_config()
     category = config.CATEGORIES[0]
     city = config.CITIES[0]
 
-    log.info("Modo dry-run: validando conectividad con Luma")
-    log.info("Configuración: %d categorías, %d ciudades", len(config.CATEGORIES), len(config.CITIES))
-    log.info("Prueba: categoría=%s, ciudad=%s", category, city["name"])
+    log.info("Mode dry-run : vérification de la connectivité avec Luma")
+    log.info("Configuration : %d catégories, %d villes", len(config.CATEGORIES), len(config.CITIES))
+    log.info("Test : catégorie=%s, ville=%s", category, city["name"])
 
     stats = RunStats()
 
     try:
         payload = fetch_page(category, city, stats=stats)
     except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError) as exc:
-        log.error("Fallo de conectividad: %s", exc)
+        log.error("Échec de connectivité : %s", exc)
         return 1
 
     entries = extract_entries(payload, stats)
-    log.info("Conectividad OK — respuesta con %d entradas", len(entries))
+    log.info("Connectivité OK — réponse avec %d entrées", len(entries))
 
     if entries:
         try:
             sample = parse_entry(entries[0], category, city["name"])
             if sample:
-                log.info("Parseo OK — ejemplo: %s (%s)", sample.name, sample.url)
+                log.info("Parsing OK — exemple : %s (%s)", sample.name, sample.url)
         except (KeyError, TypeError, AttributeError) as exc:
-            log.warning("Parseo de ejemplo falló: %s", exc)
+            log.warning("Échec du parsing de l'exemple : %s", exc)
 
     return 0
 
 
 def run() -> int:
-    """Ejecuta una corrida completa del scraper."""
+    """Exécute un run complet du scraper."""
     validate_config()
     stats = RunStats()
 
-    log.info("Iniciando corrida — %d combinaciones (categoría × ciudad)",
+    log.info("Démarrage du run — %d couples (catégorie × ville)",
              len(config.CATEGORIES) * len(config.CITIES))
-    log.info("Categorías: %s", ", ".join(config.CATEGORIES))
-    log.info("Ciudades: %s", ", ".join(c["name"] for c in config.CITIES))
+    log.info("Catégories : %s", ", ".join(config.CATEGORIES))
+    log.info("Villes : %s", ", ".join(c["name"] for c in config.CITIES))
 
     events = scrape_all(stats)
     total, new_count = persist_results(events)
@@ -491,7 +493,7 @@ def run() -> int:
 
     if new_count:
         log.info(
-            "Archivos actualizados: %s, %s, %s",
+            "Fichiers mis à jour : %s, %s, %s",
             config.SEEN_EVENTS_FILE,
             config.EVENTS_MASTER_FILE,
             new_events_filepath(),
@@ -506,12 +508,12 @@ def run() -> int:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Scraper diario de eventos tech/AI en Luma (lu.ma)",
+        description="Scraper quotidien des événements tech/IA sur Luma (lu.ma)",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Validar configuración y conectividad sin escribir archivos de salida",
+        help="Valider la configuration et la connectivité sans écrire de fichiers",
     )
     return parser.parse_args(argv)
 
@@ -527,10 +529,10 @@ def main(argv: list[str] | None = None) -> int:
             return dry_run()
         return run()
     except ValueError as exc:
-        log.error("Configuración inválida: %s", exc)
+        log.error("Configuration invalide : %s", exc)
         return 1
     except KeyboardInterrupt:
-        log.info("Corrida interrumpida por el usuario")
+        log.info("Run interrompu par l'utilisateur")
         return 130
 
 

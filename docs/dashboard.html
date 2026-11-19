@@ -377,21 +377,21 @@
 <div class="layout">
   <aside class="sidebar">
     <div class="logo">Luma Scraper</div>
-    <div class="logo-sub">Dashboard de eventos</div>
+    <div class="logo-sub">Tableau de bord des événements</div>
     <nav class="nav">
       <a href="#overview" class="active">Overview</a>
-      <a href="#events">Eventos</a>
-      <a href="alcance.html">Alcance del proyecto</a>
+      <a href="#events">Événements</a>
+      <a href="alcance.html">Périmètre du projet</a>
       <a href="roadmap.md">Roadmap</a>
     </nav>
     <div class="nav-ext">
-      <a href="README.md">Documentación</a>
+      <a href="../README.md">Documentation</a>
     </div>
   </aside>
 
   <main>
     <div id="app">
-      <div class="loading">Cargando datos del scraper…</div>
+      <div class="loading">Chargement des données du scraper…</div>
     </div>
   </main>
 </div>
@@ -489,11 +489,11 @@ function renderTimeline(events) {
   const sorted = Object.entries(byDate).sort((a, b) => a[0].localeCompare(b[0]));
   const max = Math.max(...sorted.map(([, c]) => c), 1);
 
-  if (!sorted.length) return "<p style='color:var(--muted)'>Sin datos</p>";
+  if (!sorted.length) return "<p style='color:var(--muted)'>Aucune donnée</p>";
 
   const bars = sorted.map(([date, count]) => `
     <div class="timeline-bar" style="height:${(count / max) * 100}%"
-         title="${date}: ${count} eventos"></div>
+         title="${date} : ${count} événements"></div>
   `).join("");
 
   const labels = sorted.map(([date]) =>
@@ -542,13 +542,13 @@ function renderTable() {
       <td class="date-cell">${formatDate(e.start_date)}</td>
       <td class="date-cell">${e.first_seen}</td>
     </tr>
-  `).join("") || `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:2rem">Sin resultados</td></tr>`;
+  `).join("") || `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:2rem">Aucun résultat</td></tr>`;
 
   footer.innerHTML = `
-    <span>Mostrando ${start + 1}–${Math.min(start + PAGE_SIZE, filteredEvents.length)} de ${filteredEvents.length}</span>
+    <span>Affichage de ${start + 1}–${Math.min(start + PAGE_SIZE, filteredEvents.length)} sur ${filteredEvents.length}</span>
     <div class="pagination">
-      <button id="btn-prev" ${currentPage === 0 ? "disabled" : ""}>← Anterior</button>
-      <button id="btn-next" ${currentPage >= totalPages - 1 ? "disabled" : ""}>Siguiente →</button>
+      <button id="btn-prev" ${currentPage === 0 ? "disabled" : ""}>← Précédent</button>
+      <button id="btn-next" ${currentPage >= totalPages - 1 ? "disabled" : ""}>Suivant →</button>
     </div>
   `;
 
@@ -567,30 +567,30 @@ function renderDashboard(events) {
   document.getElementById("app").innerHTML = `
     <div class="topbar" id="overview">
       <div>
-        <h1>Dashboard de eventos</h1>
-        <p class="subtitle">Datos de <code style="color:var(--accent)">events_master.csv</code> · ${events.length} eventos indexados</p>
+        <h1>Tableau de bord des événements</h1>
+        <p class="subtitle">Données de <code style="color:var(--accent)">events_master.csv</code> · ${events.length} événements indexés</p>
       </div>
       <span class="status-pill">v1 activa</span>
     </div>
 
     <div class="kpi-grid">
       <div class="kpi" style="--kpi-color:var(--accent)">
-        <div class="kpi-label">Total eventos</div>
+        <div class="kpi-label">Total événements</div>
         <div class="kpi-value">${events.length.toLocaleString()}</div>
         <div class="kpi-sub">En historial maestro</div>
       </div>
       <div class="kpi" style="--kpi-color:var(--green)">
-        <div class="kpi-label">Nuevos hoy</div>
+        <div class="kpi-label">Nouveaux aujourd'hui</div>
         <div class="kpi-value">${newToday.toLocaleString()}</div>
         <div class="kpi-sub">first_seen = ${today}</div>
       </div>
       <div class="kpi" style="--kpi-color:var(--amber)">
-        <div class="kpi-label">Próximos</div>
+        <div class="kpi-label">À venir</div>
         <div class="kpi-value">${upcoming.toLocaleString()}</div>
-        <div class="kpi-sub">start_date ≥ hoy</div>
+        <div class="kpi-sub">start_date ≥ aujourd'hui</div>
       </div>
       <div class="kpi" style="--kpi-color:var(--accent-2)">
-        <div class="kpi-label">Ciudades</div>
+        <div class="kpi-label">Villes</div>
         <div class="kpi-value">${cities.length}</div>
         <div class="kpi-sub">Cobertura geográfica</div>
       </div>
@@ -598,11 +598,11 @@ function renderDashboard(events) {
 
     <div class="charts-grid">
       <div class="card">
-        <h2>Eventos por ciudad</h2>
+        <h2>Événements par ville</h2>
         ${renderBarChart(byCity, "chart-city")}
       </div>
       <div class="card">
-        <h2>Eventos por categoría</h2>
+        <h2>Événements par catégorie</h2>
         ${byCategory.map(([label, count]) => {
           const max = byCategory[0][1];
           return `<div class="bar-row">
@@ -615,37 +615,37 @@ function renderDashboard(events) {
         }).join("")}
       </div>
       <div class="card" style="grid-column: 1 / -1">
-        <h2>Eventos detectados por fecha (first_seen)</h2>
+        <h2>Événements détectés par date (first_seen)</h2>
         ${renderTimeline(events)}
       </div>
     </div>
 
     <div class="card" id="events">
-      <h2>Explorar eventos</h2>
+      <h2>Explorer les événements</h2>
       <div class="filters">
-        <input type="search" id="search" placeholder="Buscar por nombre o ciudad…">
+        <input type="search" id="search" placeholder="Rechercher par nom ou ville…">
         <select id="filter-city">
-          <option value="">Todas las ciudades</option>
+          <option value="">Toutes les villes</option>
           ${cities.map(c => `<option value="${c}">${c}</option>`).join("")}
         </select>
         <select id="filter-category">
-          <option value="">Todas las categorías</option>
+          <option value="">Toutes les catégories</option>
           <option value="tech">tech</option>
           <option value="ai">ai</option>
         </select>
         <label style="display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:var(--muted);cursor:pointer">
-          <input type="checkbox" id="filter-upcoming"> Solo próximos
+          <input type="checkbox" id="filter-upcoming"> Seulement à venir
         </label>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Evento</th>
-              <th>Categoría</th>
-              <th>Ciudad</th>
-              <th>Fecha inicio</th>
-              <th>Detectado</th>
+              <th>Événement</th>
+              <th>Catégorie</th>
+              <th>Ville</th>
+              <th>Date de début</th>
+              <th>Détecté</th>
             </tr>
           </thead>
           <tbody id="events-tbody"></tbody>
@@ -665,19 +665,19 @@ function renderDashboard(events) {
 
 async function loadData() {
   try {
-    const res = await fetch("events_master.csv");
+    const res = await fetch("../data/events_master.csv");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text();
     allEvents = parseCSV(text).filter(e => e.name && e.url);
-    if (!allEvents.length) throw new Error("CSV vacío o sin datos válidos");
+    if (!allEvents.length) throw new Error("CSV vide ou sans données valides");
     renderDashboard(allEvents);
   } catch (err) {
     document.getElementById("app").innerHTML = `
       <div class="error-box">
-        <h2>No se pudieron cargar los datos</h2>
+        <h2>Impossible de charger les données</h2>
         <p>${err.message}</p>
         <code>python -m http.server 8000</code>
-        <p style="margin-top:.75rem;font-size:.85rem">Luego abre <strong>http://localhost:8000/dashboard.html</strong></p>
+        <p style="margin-top:.75rem;font-size:.85rem">Puis ouvre <strong>http://localhost:8000/docs/dashboard.html</strong></p>
         <p style="margin-top:.5rem;font-size:.85rem">También necesitas haber corrido <code>python scraper.py</code> al menos una vez.</p>
       </div>
     `;

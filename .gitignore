@@ -1,7 +1,7 @@
-# Estado local del scraper (ignorado en desarrollo; CI los commitea con git add -f)
-seen_events.json
-events_master.csv
-new_events_*.csv
+# État local du scraper (ignoré en local ; la CI le commite avec git add -f)
+data/seen_events.json
+data/events_master.csv
+data/new_events/
 
 # Python
 __pycache__/
@@ -15,3 +15,6 @@ venv/
 .DS_Store
 Thumbs.db
 *.log
+
+# Brouillons locaux (non versionnés)
+sandbox/
