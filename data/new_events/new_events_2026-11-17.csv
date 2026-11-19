@@ -1,11 +1,11 @@
-name,url,start_date,city,category,first_seen
-App Leaders Club : Après la FTC,https://lu.ma/app-a4fb,2026-11-20T08:00:00.000Z,Paris,tech,2026-11-17
-Investing In The Future Of Health - NextGen VC,https://lu.ma/pc3ho3q1,2026-11-25T17:30:00.000Z,Paris,tech,2026-11-17
-Scale with Microsoft,https://lu.ma/8j8wfniy,2026-12-03T17:30:00.000Z,Paris,tech,2026-11-17
-WWDinner VII : L'étrange Noël des Grenouilles,https://lu.ma/cmd-f-wwdinner-vii,2026-12-03T18:00:00.000Z,Paris,tech,2026-11-17
-Lunch&Learn | GTM Squad | How to kick start your partnership revenue channel as a seed stage company.,https://lu.ma/c0qf2ty9,2026-12-10T11:30:00.000Z,Paris,tech,2026-11-17
-Startup Pitch & Networking in Paris,https://lu.ma/2lm6xoda,2027-02-09T17:00:00.000Z,Paris,tech,2026-11-17
-GAIIF Paris 2026 | Global AI Forum,https://lu.ma/h23gk34z,2026-11-23T17:00:00.000Z,Paris,ai,2026-11-17
-IndiaAI Demo Day 2026 | India's Next Wave of Tech Innovation Comes to STATION F,https://lu.ma/v221z51f,2026-11-26T18:00:00.000Z,Paris,ai,2026-11-17
-Meet with Modal at NeurIPS Paris '26,https://lu.ma/modal-bt1o,2026-12-09T09:30:00.000Z,Paris,ai,2026-11-17
-Camp Code-Gen Dinner at NeurIPS 2026 Paris,https://lu.ma/revelo-neurips-dinner-paris,2026-12-09T18:30:00.000Z,Paris,ai,2026-11-17
+name,url,start_date,city,category,organisateur,first_seen,api_id,calendar_api_id,speaker_1,speaker_1_lien,info_speaker_1,speaker_2,speaker_2_lien,info_speaker_2,speaker_3,speaker_3_lien,info_speaker_3,speaker_4,speaker_4_lien,info_speaker_4,speaker_5,speaker_5_lien,info_speaker_5,speaker_6,speaker_6_lien,info_speaker_6,speaker_7,speaker_7_lien,info_speaker_7,speaker_8,speaker_8_lien,info_speaker_8,speaker_9,speaker_9_lien,info_speaker_9,speaker_10,speaker_10_lien,info_speaker_10
+App Leaders Club : Après la FTC,https://lu.ma/app-a4fb,2026-11-20T08:00:00.000Z,Paris,tech,,2026-11-17T00:00:00.000Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Investing In The Future Of Health - NextGen VC,https://lu.ma/pc3ho3q1,2026-11-25T17:30:00.000Z,Paris,tech,,2026-11-17T00:00:00.000Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Scale with Microsoft,https://lu.ma/8j8wfniy,2026-12-03T17:30:00.000Z,Paris,tech,,2026-11-17T00:00:00.000Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+WWDinner VII : L'étrange Noël des Grenouilles,https://lu.ma/cmd-f-wwdinner-vii,2026-12-03T18:00:00.000Z,Paris,tech,,2026-11-17T00:00:00.000Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Lunch&Learn | GTM Squad | How to kick start your partnership revenue channel as a seed stage company.,https://lu.ma/c0qf2ty9,2026-12-10T11:30:00.000Z,Paris,tech,,2026-11-17T00:00:00.000Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Startup Pitch & Networking in Paris,https://lu.ma/2lm6xoda,2027-02-09T17:00:00.000Z,Paris,tech,,2026-11-17T00:00:00.000Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+GAIIF Paris 2026 | Global AI Forum,https://lu.ma/h23gk34z,2026-11-23T17:00:00.000Z,Paris,ai,,2026-11-17T00:00:00.000Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IndiaAI Demo Day 2026 | India's Next Wave of Tech Innovation Comes to STATION F,https://lu.ma/v221z51f,2026-11-26T18:00:00.000Z,Paris,ai,,2026-11-17T00:00:00.000Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Meet with Modal at NeurIPS Paris '26,https://lu.ma/modal-bt1o,2026-12-09T09:30:00.000Z,Paris,ai,,2026-11-17T00:00:00.000Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Camp Code-Gen Dinner at NeurIPS 2026 Paris,https://lu.ma/revelo-neurips-dinner-paris,2026-12-09T18:30:00.000Z,Paris,ai,,2026-11-17T00:00:00.000Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

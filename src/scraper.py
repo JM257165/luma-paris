@@ -367,6 +367,11 @@ def save_seen_events(seen: dict[str, str]) -> None:
         handle.write("\n")
 
 
+def first_seen_value(run_date: date) -> str:
+    """Format de first_seen : même format ISO UTC que start_date."""
+    return f"{run_date.isoformat()}T00:00:00.000Z"
+
+
 def event_to_row(event: Event, first_seen: str) -> dict[str, str]:
     row = {
         "name": event.name,
@@ -421,7 +426,7 @@ def persist_results(events: list[Event], run_date: date | None = None) -> tuple[
     Retourne (total_consultés, total_nouveaux).
     """
     run_date = run_date or date.today()
-    first_seen = run_date.isoformat()
+    first_seen = first_seen_value(run_date)
     unique_events = dedupe_events(events)
     seen = load_seen_events()
     new_events = filter_new_events(unique_events, seen)

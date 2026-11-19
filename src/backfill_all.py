@@ -67,7 +67,7 @@ def run(write: bool, run_date: date) -> int:
                 continue
             log.info("Backfill : %s (%s)", cal["nom"], cal["calendar_api_id"])
             events = backfill_calendar.backfill_calendar(cal["calendar_api_id"])
-            incoming.extend(scraper.event_to_row(e, run_date.isoformat()) for e in events)
+            incoming.extend(scraper.event_to_row(e, scraper.first_seen_value(run_date)) for e in events)
             done.add(cal["calendar_api_id"])
             log.info("  %d événements", len(events))
     except backfill_calendar.StopBackfill as exc:
@@ -83,7 +83,7 @@ def run(write: bool, run_date: date) -> int:
         seen = scraper.load_seen_events()
         for row in added:
             if row["api_id"]:
-                seen[row["api_id"]] = run_date.isoformat()
+                seen[row["api_id"]] = scraper.first_seen_value(run_date)
         scraper.save_seen_events(seen)
 
     for cal in calendars:

@@ -668,7 +668,7 @@ async function loadData() {
     const res = await fetch("../data/events_master.csv");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text();
-    allEvents = parseCSV(text).filter(e => e.name && e.url);
+    allEvents = parseCSV(text).filter(e => e.name && e.url).map(e => ({ ...e, first_seen: (e.first_seen || "").slice(0, 10) }));
     if (!allEvents.length) throw new Error("CSV vide ou sans données valides");
     renderDashboard(allEvents);
   } catch (err) {
