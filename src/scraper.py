@@ -31,6 +31,7 @@ class Event:
     city: str
     category: str
     organisateur: str = ""
+    calendar_api_id: str = ""
     speakers: list[dict] = field(default_factory=list)
 
 
@@ -216,6 +217,12 @@ def parse_entry(entry: dict, category: str, city_name: str) -> Event | None:
     speakers = extract_speakers(entry, event_data)
     calendar = entry.get("calendar") or event_data.get("calendar") or {}
     organisateur = (calendar.get("name") or "").strip() if isinstance(calendar, dict) else ""
+    calendar_api_id = (
+        entry.get("calendar_api_id")
+        or event_data.get("calendar_api_id")
+        or (calendar.get("api_id") if isinstance(calendar, dict) else "")
+        or ""
+    )
     if len(speakers) > config.MAX_SPEAKERS:
         log.warning(
             "Événement %s : %d speakers, seuls %d sont conservés",
@@ -232,6 +239,7 @@ def parse_entry(entry: dict, category: str, city_name: str) -> Event | None:
         city=city_name,
         category=category,
         organisateur=organisateur,
+        calendar_api_id=calendar_api_id,
         speakers=speakers,
     )
 
@@ -368,6 +376,8 @@ def event_to_row(event: Event, first_seen: str) -> dict[str, str]:
         "category": event.category,
         "organisateur": event.organisateur,
         "first_seen": first_seen,
+        "api_id": event.api_id,
+        "calendar_api_id": event.calendar_api_id,
     }
     for i in range(1, config.MAX_SPEAKERS + 1):
         speaker = event.speakers[i - 1] if i <= len(event.speakers) else None

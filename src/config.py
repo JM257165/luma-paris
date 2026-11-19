@@ -33,7 +33,7 @@ STATS_DAILY_FILE = DATA_DIR / "stats_daily.csv"
 # 3 colonnes : speaker_i (Nom Prénom), speaker_i_lien (LinkedIn ou réseau), info_speaker_i.
 MAX_SPEAKERS = 10
 
-BASE_CSV_FIELDNAMES = ["name", "url", "start_date", "city", "category", "organisateur", "first_seen"]
+BASE_CSV_FIELDNAMES = ["name", "url", "start_date", "city", "category", "organisateur", "first_seen", "api_id", "calendar_api_id"]
 SPEAKER_CSV_FIELDNAMES = [
     field
     for i in range(1, MAX_SPEAKERS + 1)
