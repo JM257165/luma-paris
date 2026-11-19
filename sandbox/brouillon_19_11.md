@@ -25,7 +25,7 @@ Idée (non codée) : classer les URLs Luma (calendrier ou événement) par leur 
 
 ## À faire
 
-(à compléter)
+- Passe de rattrapage (plus tard, pas aujourd'hui) : repasser sur les calendriers déjà connus et sur tous les événements. Certains n'ont pas été renseignés (organisateur, speakers) alors que Luma les fournit. Compléter sans écraser les champs remplis.
 
 ## Graphique (non codé)
 
