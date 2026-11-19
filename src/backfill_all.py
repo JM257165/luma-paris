@@ -41,7 +41,7 @@ def resolve_calendar_id(url: str) -> str:
 
 def run(write: bool, run_date: date) -> int:
     calendars = calendar_discover.read_calendar_master()
-    missing = [c for c in calendars if not c["calendar_api_id"]]
+    missing = [c for c in calendars if not c["calendar_api_id"] and c.get("backfilled") != calendar_discover.BACKFILL_YES]
     print(f"Calendriers : {len(calendars)} · sans identifiant : {len(missing)}")
     for cal in missing:
         print(f"  ? {cal['nom']} — {cal['url']}")
@@ -63,7 +63,7 @@ def run(write: bool, run_date: date) -> int:
     done: set[str] = set()
     try:
         for cal in calendars:
-            if not cal["calendar_api_id"]:
+            if not cal["calendar_api_id"] or cal.get("backfilled") == calendar_discover.BACKFILL_YES:
                 continue
             log.info("Backfill : %s (%s)", cal["nom"], cal["calendar_api_id"])
             events = backfill_calendar.backfill_calendar(cal["calendar_api_id"])
