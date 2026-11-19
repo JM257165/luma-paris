@@ -56,7 +56,7 @@ def run(write: bool, run_date: date) -> int:
             break
         total, new = scraper.persist_results(events, run_date)
         log.info("%s : %d événements uniques, %d nouveaux", calendar["nom"], total, new)
-        backfilled.append(calendar)
+        backfilled.append({**calendar, "backfilled": calendar_discover.BACKFILL_YES})
 
     calendar_discover.write_calendar_master(rows + backfilled)
 

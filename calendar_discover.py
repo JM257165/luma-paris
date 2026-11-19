@@ -33,7 +33,9 @@ log = logging.getLogger("calendar_discover")
 MAX_PAGES_PER_CATEGORY = 5
 RAW_DIR = Path.home() / "luma-discover-raw"
 CALENDAR_MASTER_FILE = Path(__file__).resolve().parent / "calendar_master.csv"
-CALENDAR_FIELDNAMES = ["nom", "url", "calendar_api_id"]
+CALENDAR_FIELDNAMES = ["nom", "url", "calendar_api_id", "backfilled"]
+BACKFILL_NO = "Non"
+BACKFILL_YES = "Oui"
 CALENDAR_URL_PREFIX = "https://lu.ma/"
 
 
@@ -115,6 +117,7 @@ def read_calendar_master() -> list[dict]:
                 "nom": row.get("nom", ""),
                 "url": row.get("url", ""),
                 "calendar_api_id": row.get("calendar_api_id", "") or "",
+                "backfilled": row.get("backfilled", "") or BACKFILL_NO,
             }
             for row in csv.DictReader(handle)
         ]
@@ -142,7 +145,7 @@ def merge_calendars(existing: list[dict], found: dict[str, dict]) -> tuple[list[
             known["calendar_api_id"] = api_id
             by_id[api_id] = known
             continue
-        added.append(dict(calendar))
+        added.append({**calendar, "backfilled": BACKFILL_NO})
     return rows, added
 
 

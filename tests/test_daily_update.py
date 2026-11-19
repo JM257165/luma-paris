@@ -14,7 +14,7 @@ import charts  # noqa: E402
 
 
 def cal(api_id: str, nom: str, slug: str) -> dict:
-    return {"nom": nom, "url": f"https://lu.ma/{slug}", "calendar_api_id": api_id}
+    return {"nom": nom, "url": f"https://lu.ma/{slug}", "calendar_api_id": api_id, "backfilled": "Non"}
 
 
 class MergeCalendarsTest(unittest.TestCase):
@@ -46,7 +46,8 @@ class CollectCalendarsTest(unittest.TestCase):
             {"calendar": {"api_id": "cal-2", "slug": "", "name": "Sans slug"}},
             {"event": {}},
         ]
-        self.assertEqual(calendar_discover.collect_calendars(entries), {"cal-1": cal("cal-1", "Hexa", "hexa")})
+        expected = {k: v for k, v in cal("cal-1", "Hexa", "hexa").items() if k != "backfilled"}
+        self.assertEqual(calendar_discover.collect_calendars(entries), {"cal-1": expected})
 
 
 class StatsTest(unittest.TestCase):
