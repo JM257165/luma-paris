@@ -52,3 +52,12 @@ Requête « <nom court> calendar Paris events », restreinte à lu.ma et luma.co
   2. Le sitemap de lu.ma reste une requête vers Luma : elle ne se lance qu'après ton feu vert, avec les pauses de 3 à 5 s.
   3. Les conditions d'utilisation de ces APIs et de la recherche elle-même doivent être lues avant tout usage ; « Keirolabs » n'est pas un service que je peux vérifier.
 - Piste plus propre : une seule API de recherche officielle, sur un compte à ton nom, avec son quota payant ou gratuit documenté. Pour une centaine de requêtes, le coût devrait rester faible. Rien n'est lancé.
+
+## Discover sans slug : test Paris
+
+- Test du 18/11 : `discover/get-paginated-events` avec lat/lon de Paris et sans slug répond en HTTP 200. Il renvoie un flux mixte (tech, IA et autres), trié par date de début. Page 1 : 45 événements, page 2 : 45 événements, et le flux continue.
+- Un seul slug par requête : `slug=tech&slug=ai` renvoie « Invalid request », `slug=tech,ai` renvoie « not found ». Les flux tech (50) et IA (50) n'ont aucun événement en commun.
+- Conclusion : tech OU IA = deux requêtes fusionnées. Un ET n'existe pas avec ce paramètre.
+- Intérêt du mode sans slug : une seule requête par ville couvre plus large, sans dépendre des catégories. Il permet aussi de voir les événements hors tech/IA, à filtrer ensuite.
+- Réglage : aujourd'hui, il n'existe pas de paramètre pour le désactiver. `scraper.py` refuse une liste `CATEGORIES` vide. Pour l'activer, il faudrait une option dédiée (ex. `USE_SLUG = False`) et une modification de `scraper.py`. Rien n'est codé.
+- Décision à prendre : garder le filtre tech/IA par défaut et ajouter l'option sans slug en complément, ou remplacer le filtre ?
