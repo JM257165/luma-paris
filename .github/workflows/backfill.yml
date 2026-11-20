@@ -1,0 +1,42 @@
+name: Daily Luma Backfill
+
+on:
+  schedule:
+    - cron: "0 10 * * *"   # 10:00 UTC = 11:00 Paris (heure d'hiver)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    name: Discover puis backfill des calendriers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Discover et backfill des nouveaux calendriers
+        run: python src/daily_update.py --write
+
+      - name: Backfill des calendriers non backfillés
+        run: python src/backfill_all.py --write
+
+      - name: Commit des fichiers de données
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f data/ charts/ 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "Aucun changement dans les fichiers de données"
+          else
+            git commit -m "chore: backfill quotidien $(date -u +%Y-%m-%d)"
+            git pull --rebase origin main
+            git push
+          fi
