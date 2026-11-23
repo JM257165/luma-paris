@@ -3,16 +3,17 @@
 <text x="64" y="28" font-size="16" font-weight="bold" fill="#374151">Calendriers uniques, cumul par jour</text>
 <line x1="64" y1="304.0" x2="616" y2="304.0" stroke="#e5e7eb"/>
 <text x="56" y="308.0" font-size="11" text-anchor="end" fill="#374151">0</text>
-<line x1="64" y1="180.0" x2="616" y2="180.0" stroke="#e5e7eb"/>
-<text x="56" y="184.0" font-size="11" text-anchor="end" fill="#374151">39</text>
+<line x1="64" y1="181.5" x2="616" y2="181.5" stroke="#e5e7eb"/>
+<text x="56" y="185.5" font-size="11" text-anchor="end" fill="#374151">40</text>
 <line x1="64" y1="56.0" x2="616" y2="56.0" stroke="#e5e7eb"/>
-<text x="56" y="60.0" font-size="11" text-anchor="end" fill="#374151">78</text>
-<polyline points="64.0,87.8 248.0,65.5 432.0,56.0 616.0,56.0" fill="none" stroke="#2563eb" stroke-width="2.5"/>
-<circle cx="64.0" cy="87.8" r="3.5" fill="#2563eb"/>
-<circle cx="248.0" cy="65.5" r="3.5" fill="#2563eb"/>
-<circle cx="432.0" cy="56.0" r="3.5" fill="#2563eb"/>
+<text x="56" y="60.0" font-size="11" text-anchor="end" fill="#374151">81</text>
+<polyline points="64.0,95.8 202.0,74.4 340.0,65.2 478.0,65.2 616.0,56.0" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+<circle cx="64.0" cy="95.8" r="3.5" fill="#2563eb"/>
+<circle cx="202.0" cy="74.4" r="3.5" fill="#2563eb"/>
+<circle cx="340.0" cy="65.2" r="3.5" fill="#2563eb"/>
+<circle cx="478.0" cy="65.2" r="3.5" fill="#2563eb"/>
 <circle cx="616.0" cy="56.0" r="3.5" fill="#2563eb"/>
 <text x="64" y="324" font-size="11" fill="#374151">2026-11-19</text>
-<text x="616" y="324" font-size="11" text-anchor="end" fill="#374151">2026-11-22</text>
-<text x="616" y="28" font-size="13" text-anchor="end" fill="#2563eb">78</text>
+<text x="616" y="324" font-size="11" text-anchor="end" fill="#374151">2026-11-23</text>
+<text x="616" y="28" font-size="13" text-anchor="end" fill="#2563eb">81</text>
 </svg>
